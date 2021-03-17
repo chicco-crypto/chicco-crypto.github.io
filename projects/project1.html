@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Packet Modification Attack on PLC with ARP Spoofing (MITM Attack)</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="../index.html" class="logo">
+									<span class="symbol"><img src="../images/face.jpg" alt="" /></span><span class="title">Nicole's Blog</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="../index.html">Home</a></li>
+							<li><a href="../generic.html">Ipsum veroeros</a></li>
+							<li><a href="../generic.html">Tempus etiam</a></li>
+							<li><a href="../generic.html">Consequat dolor</a></li>
+							<li><a href="../elements.html">Elements</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1>Packet Modification Attack on PLC with ARP Spoofing (MITM Attack)</h1>
+							<span class="image main"><img src="../images/project1/project1_header.jpeg" alt="" style="width:auto; margin-left: auto; margin-right: auto;"/><figcaption style="text-align: center;">By Pierre75000 — Own work, CC BY-SA 4.0,<a href="http://by%20pierre75000%20-%20own%20work%2C%20cc%20by-sa%204.0%2C%20https//commons.wikimedia.org/w/index.php?curid=80946678">Wikimedia</a></figcaption></span>
+							
+							<h2>The Testbed:</h2>
+							<p>Firstly, I want to share a little information about the testbed I was allowed to play with before jumping in straight into the attack.</p>
+							<p>The testbed was a simple setup, comprised of a Human Machine Interface (HMI), Switch and a Programmable Logic Controller (PLC). The testbed also had flip switches linked to the light bulbs, and these light bulbs can be switched on and off physically using the flip switch, or it can also be done from the HMI.The testbed was a simple setup, comprised of a Human Machine Interface (HMI), Switch and a Programmable Logic Controller (PLC). The testbed also had flip switches linked to the light bulbs, and these light bulbs can be switched on and off physically using the flip switch, or it can also be done from the HMI.</p>
+							<p>The HMI was an Allen-Bradley PanelView Plus 7 1000 so the CVE list I had gathered which were all conveniently for PanelView Plus 6 was out of the equation. The PLC was also from Allen-Bradley, with the model number 1756-EN2T/D that I discovered during my reconnaissance phase.
+							<br><br>Even with that system information, I have gathered, It was still tricky to find exploits for both the HMI and the PLC. There wasn’t a lot of exploits readily available anyway. Plus, the PLC I had to work with only had Ethernet/IP module installed, so Modbus exploits were also out of the equation.</p>
+
+							<span style="text-align: center;"><img src="../images/project1/gif1.gif" alt="" style="display: block; margin-left: auto; margin-right: auto;"><figcaption>I'm screwed</figcaption></span>
+							<br><p>With little experience in penetration testing, I’ve always relied on system vulnerabilities and simply downloading exploits available form exploit-db. Still, it’s OT I’m working on, and there is literally not a lot exploits out there.</p>
+							
+							<hr>
+
+							<h2>Research.</h2>
+							<p>I decided to look for reports on how these control systems can be compromised, hoping it would give me some idea. Most of the stories I saw were on Denial-of-Service (DoS) Attacks, but my supervisor told me not to focus on that because it was too simple.</p>
+							<span style="text-align: center;"><img src="../images/project1/gif2.gif" alt="" style="display: block; margin-left: auto; margin-right: auto;"><figcaption>But what else could I do.</figcaption></span>
+							<br><p>I agree it was too simple… Legacy systems are prone to DoS attacks, simple SYN flood or Intrusive scanning could do the trick.</p>
+							<p>Thankfully, I came across this <a href="https://www.youtube.com/watch?v=-KHel7SyXsU"><u>YouTube video</u></a> from DEF CON 26 by Thiago Alves. From that, I learned the four attack scenarios, which was Modification, Interruption, Interception and Injection.
+							<br><br>I decided to focus on Modification because Interruption is still DoS, Interception is viewing packets which can be done quickly with a sniffing tool (like Wireshark) since the communication is not encrypted anyway. An injection is just too difficult with my current knowledge of ICS Protocols.</p>
+							
+							<hr>
+
+							<h2>The Attack Scenario.</h2>
+							<p>The idea of the attack is to use ARP spoofing to direct the traffic between the HMI and the PLC to the attacker. When I become the man in the middle, I will be able to receive packets from the HMI. Once I receive the packet, I will modify the data before forwarding it to the PLC. Fig.1 should help you understand what I am trying to do.</p>
+							<span class="image fit"><img src="../images/project1/pic1.png" alt=""><figcaption style="text-align: center;">Fig.1 Attack Overview</figcaption></span>
+							<p>So when an operator uses the HMI to turn a specific Light on, another lights up instead. Hence, a Packet Modification Attack.</p>
+
+							<hr>
+							
+							<h2>The Execution.</h2>
+							<h4>Step 1: Script Writing</h4>
+							<p>Thanks to my dear friend who told me about ettercap filters and how we can use it to replace data of the packets received before it is forwarded to the designated host.</p>
+
+							<span class="image fit"><img src="../images/project1/pic2.png" alt="" style="width:auto; margin-left: auto; margin-right: auto;"><figcaption style="text-align: center;">Fig.2 HMI Packet</figcaption></span>
+
+							<p>I realised that when I was playing around with the lights, the packet data stays the same except for <strong>IP sequence count, Instance and Command Specific Data.</strong>
+							<br><br>After analysing a few more packets, I discovered that <strong>Instance: 0x0020 </strong> highlighted in purple, is the address on the PLC corresponding to the light. From Fig.2, instance x0020 this is the light 5.</p>
+							
+							<p>Command Specific Data: c1000100<strong>00</strong> — light on. <br><br>
+								Command Specific Data: c1000100<strong>ff</strong> — light off.</p>
+							
+							<span class="image fit"><img src="../images/project1/pic3.png" alt="" style="width:auto; margin-left: auto; margin-right: auto;"><figcaption style="text-align: center;">Fig.3 Lights and its corresponding addresses</figcaption></span>
+
+							<p>I have mapped the lights and its corresponding addresses in Fig.3 to help you visualise.
+							<br><br>The script that I wrote was to change the instance in this way when I turn light 5 on, light 1 lights up instead. If you want to know how to compile your script to a filter, visit <a href="https://www.systutorials.com/docs/linux/man/8-etterfilter/"><u>systutorials.</u></a></p>
+							
+							<script src="https://gist.github.com/chicconumber1/a3e1e3e1d07de2284f5305b6a432e070.js"></script>
+							
+							<p>The most important lines from the code above are line 1,2 and 4, everything else is extra.</p>
+							<p><strong>Line 1</strong> — is to filter the packet that has a destination port of 44818 because EtherNet/IP makes use of TCP port number 44818 for explicit messaging. I only want the packets that are for the PLC.</p>
+							<p><strong>Line 2</strong> — IF statement is to filter packet with instance pattern \x25\x00\x20\x00 for light 5. From here, The packet that I should be getting is an HMI packet for light 5 to the PLC.</p>
+							<p><strong>Line 4 </strong> — Replace the packet data to light 1 which is \x25\x00\x1c.</p>
+
+							<h4>Step 2: Becoming the Man in the Middle.</h4>
+							<span class="image fit"><img src="../images/project1/pic4.png" alt="" style="width:auto; margin-left: auto; margin-right: auto;"><figcaption style="text-align: center;">Fig.4 Overview of ARP Spoofing</figcaption></span>
+							
+							<p>Fig.4 Illustrates how the my Kali (Attacking Machine) will perform ARP Spoofing which will enable me to pretend as the PLC for the HMI and an HMI for the PLC.</p>
+							
+							<strong>What is ARP Spoofing?</strong>
+							<p>ARP Spoofing is a man-in-the-middle attack where an attacker sends forged ARP messages onto the Local Area Network (LAN) to associate the attacker’s MAC Address with an IP address of a legitimate host. Once the MAC Address is linked, it will cause any traffic meant for the IP address to be sent to the attacker. <br><br>
+							Before ARP Spoofing, I made sure IP Forwarding was enabled so when HMI is being spoofed, packets that my Kali receives can be forwarded to the PLC. This can be done by running a simple command in the terminal:</p>
+
+							<strong>echo 1 > /proc/sys/net/ipv4/ip_forward</strong> <br><br>
+
+							<p>I used the tool <a href="https://www.ettercap-project.org/"><u>Ettercap</u></a> for ARP spoofing as shown in Fig.5 below.</p>
+
+							<span class="image fit"><img src="../images/project1/pic5.png" alt="" style="width:auto; margin-left: auto; margin-right: auto;"><figcaption style="text-align: center;">Fig.5 Ettercap ARP Poisoning</figcaption></span>
+							
+							<p>With IP Forwarding disabled, you can imagine how many bad TCP packets would be detected by Wireshark. Unless you are planning to perform an Interruption attack, you can leave it to Zero.</p>
+
+							<h4>Step 3: Loading the filter!</h4>
+							<p>As I became the man-in-the-middle, I loaded the filter and pressed light 5 on the HMI, and it worked!!!</p>
+							
+							<span class="image fit"><img src="../images/project1/pic6.png" alt="" style="width:auto; margin-left: auto; margin-right: auto;"><figcaption style="text-align: center;">Fig.6 Ettercap Results</figcaption></span>
+							
+							<p>If you were curious about how the script worked on the ettercap and what output it showed, you could take a look at Fig.6.</p>
+	
+							<hr>
+							
+							<!-- Outro -->
+							<p>Any feedback or constructive criticism is welcomed! You can find me on my twitter <a href="https://twitter.com/moveax_nic"><u>@moveax_nic</u></a>, LinkedIn <a href="https://www.linkedin.com/in/nicoleaponce/"><u>@nicoleaponce</u></a> or my <a href="http://youtube.com/c/chicconumber1"><u>YouTube</u></a> channel!</p>
+
+							<hr>
+
+							<!-- date written & published -->
+							Oct 21, 2020
+						</div>
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<div class="inner">
+							<section>
+								<h2>Nicole's Blog</h2>
+								Aspiring Network Security Architect
+							</section>
+							<ul class="copyright">
+								<li>&copy; Nicole's Blog. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/util.js"></script>
+			<script src="../assets/js/main.js"></script>
+
+	</body>
+</html>

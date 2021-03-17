@@ -1,0 +1,151 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Lecture: Subnetting 101</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="../index.html" class="logo">
+									<span class="symbol"><img src="../images/face.jpg" alt="" /></span><span class="title">Nicole's Blog</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="../index.html">Home</a></li>
+							<li><a href="../generic.html">Ipsum veroeros</a></li>
+							<li><a href="../generic.html">Tempus etiam</a></li>
+							<li><a href="../generic.html">Consequat dolor</a></li>
+							<li><a href="../elements.html">Elements</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1>Learning Subnetting (Simplified)</h1>
+							<span class="image main"><img src="../images/lecture1/lecture1_header.png" alt="" /></span>
+							<p>I have been studying networking for my IT course and there is this particular topic that I always forget how to do, although I know the concept. I just kept looking back at my notes and other online resources, so I have finally decided to just write a blog solely for this topic. Combining all my resources and notes to refresh my mind once again.
+								So this blog is for those who want to learn how subnetting works step-by-step or if you are just like me who needs a refresher every once in a while.<br><br>
+							
+							<em>However, I do want to assume that you already know classes of IP addresses, what is subnet mask for and what is a network ID.</p></em>
+							
+							<h2>Learning Objectives of this blog:</h2>
+							<ul>
+							<li>Understand the concept of subnetting</li>
+							<li>How to read CIDR notation</li>
+							<li>Determine the number of hosts and network ID upon reading the IP CIDR notation</li>
+							<li>Determine range of hosts and the broadcast IP address of an IP subnet</li>
+							</ul>
+
+							<h2>What is subnetting?</h2>
+							<p>Subnetting is dividing a network into two or smaller networks. This divided networks are called <strong>subnets.</strong> The purpose of subnetting is to enhance security, increase routing efficiency and to reduce the size of the <a href="https://study-ccna.com/subnetting-explained/"><u>broadcast domain¹.</u></a></p>
+							<p>I am not going to dive deep into the benefits of subnetting, but you can find it <a href="https://community.spiceworks.com/networking/articles/2476-why-subnet-your-network-the-benefits-of-subnetting"><u>here.</u></a></p>
+							<h3>How do we subnet?</h3>
+							<p>To subnet, we divide an IP network address’ host portion into two parts. Meaning, we borrow bits from the host bits of an IP address and use it as our subnet bits. We can borrow a number of bits depending on how many subnets we need.</p>
+							<span class="image fit"><img src="../images/lecture1/pic1.png" alt=""></span>
+							<p>Let me give you an example, lets say you have an IP address and the network ID is 192.168.1.0. You want to divide this into 6 different networks.
+								<br><br>So you will need to borrow 3 bits from the 8 host bits to fit your 6 different subnets. The formula for this is:<br></p>
+							<pre><code>No. of subnets = 2<sup>subnet bits</sup></code></pre>
+
+							<span class="image fit"><img src="../images/lecture1/pic2.png" alt=""></span>
+
+							<h2>What is CIDR?</h2>
+							<p>CIDR stands for Classless Inter-Domain Routing. This is also knows as classless or prefix-based addressing. This was implemented to solve the problems posed with Class-based addressing.</p>
+							<p>Classful system of allocating IP addresses is <strong>wasteful</strong>. Anyone who needs slightly more than 254 hosts addresses will be given class B address block of 65533 host addresses.</p>
+							<p>So CIDR was developed to eliminate the traditional concept of Class A, B and C network addresses and that enables efficient allocation of IP address space as it assign address space based on needs.</p>
+							<p>Explained more in <strong>RFC 1517–1520.</strong></p>
+
+							<h2>CIDR Address Notation:</h2>
+							<p>So you may have come across an IP address that looks like this: <strong>192.168.190.9/18</strong> or subnet masks that looks like this: <strong>255.255.192.0.</strong> Totally different from your usual subnet mask of 255.255.255.0.</p>
+							<p>You know how your IP address is presented in 32 bits? Well the “/18” states that 18 bits of that address is your network part. Which means 14 bits are left for host addresses.</p>
+							<p>Hence you can also calculate number of hosts: <br>
+							<pre><code>No. of host bits left = 32 — subnet bits
+No. of hosts = 2<sup>( no. of host bits left ) — 2</sup></code></pre>
+							<em><strong>-2</strong> because first address is the network ID and last address is the Broadcast ID.</em></p>
+							<p>For example, the common IP address you will probably see in your internal network is 192.168.10.32/24. This means 24 bits were used for the network part of the address and the remaining 8 will be your host bits.</p>
+							<span class="image fit"><img src="../images/lecture1/pic3.png" alt=""></span>
+							<p>Hope the photo above helps you better visualize how this notation works.</p>
+							<p>Lets try another one. We have an IP address of 192.168.190.9/<strong>18.</strong> Lets find <strong>number of hosts, network ID and subnet.</strong></p>
+							<p>“/18” states that 18 bits are used for network part. Hence, 14 bits are left for host bit.</p>
+							<span class=""><img src="../images/lecture1/pic4.png" alt="" style="display: block; margin-left: auto; margin-right: auto;"></span><br>
+							<p>For network ID, you just need to add up all the 18 bits and this should give you a network ID of 192.168.128.0</p>
+							<span class="image fit"><img src="../images/lecture1/pic5.png" alt=""><figcaption style="text-align: center;">Network ID Calculation</figcaption></span>
+							<p>As for determining the subnet, all ones of 18 bits should do the trick.</p>
+							<span class="image fit"><img src="../images/lecture1/pic6.png" alt=""><figcaption style="text-align: center;">Subnet Calculation</figcaption></span>
+							<p>Keep in mind that this method is to only help you visualize and understand CIDR better. If you are looking for a method that will help you with subnetting fast be sure to watch Professor Messer’s video on <a href="https://www.youtube.com/watch?v=ZxAwQB8TZsM"><u>Seven Second Subnetting Process.</u></a></p>
+							
+							<h3>IP subnet’s Range of Hosts and Broadcast IP address.</h3>
+							<p>Let use the IP address 192.168.10.32/24 as an example. Lets say we we needed 3 subnetworks, so we borrowed 2 bits from the remaining host bits. We then derived our first subnet to be 192.168.10.128. Now we need to know how to find the range of hosts in that subnetwork as well as its Broadcast IP address.</p>
+							<p>You can use the diagram to help you visualize:</p>
+							<span class="image fit"><img src="../images/lecture1/pic7.png" alt=""></span>
+							<p>Since the 2 bits that we borrowed are now part of the network ID, we are just left with 6 bits for the hosts. Remember that range of hosts does not include all 000000 and all 111111. Hence, our range will only be <strong>000001 to 111110.</strong></p>
+							<p>So for the subnet 192.168.10.128/26 it has range of Host IPs from <strong>192.168.10.129 to 192.168.10.190.</strong></p>
+							<p>Our Broadcast IP address should be obvious by now, as it is always the last IP address of the subnet: <strong>192.168.10.191</strong></p>
+							
+							<hr>
+
+							<!-- Outro -->
+							<p>Any feedback or constructive criticism is welcomed! You can find me on my twitter <a href="https://twitter.com/moveax_nic"><u>@moveax_nic</u></a>, LinkedIn <a href="https://www.linkedin.com/in/nicoleaponce/"><u>@nicoleaponce</u></a> or my <a href="http://youtube.com/c/chicconumber1"><u>YouTube</u></a> channel!</p>
+
+							<hr>
+
+							<!-- References -->
+							<p>[1]: Subnetting Explained. Retrieved from Study-CCNA: <a href="https://study-ccna.com/subnetting-explained/">https://study-ccna.com/subnetting-explained/</a></p>
+
+							<!-- date written & published -->
+							May 17, 2020
+						</div>
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<div class="inner">
+							<section>
+								<h2>Nicole's Blog</h2>
+								Aspiring Network Security Architect
+							</section>
+							<ul class="copyright">
+								<li>&copy; Nicole's Blog. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/util.js"></script>
+			<script src="../assets/js/main.js"></script>
+
+	</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Lecture: Subnetting 101</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="../index.html" class="logo">
+									<span class="symbol"><img src="../images/face.jpg" alt="" /></span><span class="title">Nicole's Blog</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="../index.html">Home</a></li>
+							<li><a href="../generic.html">Ipsum veroeros</a></li>
+							<li><a href="../generic.html">Tempus etiam</a></li>
+							<li><a href="../generic.html">Consequat dolor</a></li>
+							<li><a href="../elements.html">Elements</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1>How to hack Instagram Accounts using Social Engineering</h1>
+							<span class="image main"><img src="../images/tutorial1/ig_header.png" alt="" /></span>
+							<p>This tutorial will only prepare you for the technical side of the attack but this attack needs more than that. It needs social engineering skills from you to actually execute this successfuly.</p>
+
+							<h3>Disclaimer</h3>
+							<blockquote>All data and information procided on this site are for informational & educational purposes only. I will not be responsible for any action performed by any readers. I mostly focus on tutorials, sharing projects, lectures and security guides. If you plan to use the content for any illegal purpose, please leave this site immediately</blockquote>
+							<br>
+
+							<h2>Prerequisites</h2>
+							<ul>
+							<li>Kali Machine</li>
+							<li>Installed ngrok in your kali machine</li>
+							<li>Download Fake instagram page source code by <a href="https://github.com/Manisso/Fake-instagrame"><u>Manisso</u></a></li>
+							<li><em>Optional:</em> <a href="https://github.com/SwetabhOfficial/instagram-hacking-tool"><u>SwetabhOfficial Instagram</u></a> Credential Harvester without ngrok</li>
+							</ul><br>
+
+							<h2>Setting up Ngrok</h2>
+							<p>I will not be showing you how to install ngrok but how to use it as installation is pretty well explained in their site.</p>
+							<p>To use ngrok you will need to run ngrok with the following command:</p>
+							<span class="image fit"><img src="../images/tutorial1/pic1.JPG" alt="" style="display: block; margin-left: auto; margin-right: auto;"></span>
+							<p><strong>http</strong> is to indicate you want to expose a web server running on your local machine to the internet. <br>
+							and <strong>80</strong> is the port you want to specify your web server to listen on. In this case we choose default port 80.</p>
+							<span class="image fit"><img src="../images/tutorial1/pic2.JPG" alt="" style="display: block; margin-left: auto; margin-right: auto;"></span>
+							<p>After running the command, it will generate links for you as shown in the image above. Those are the link that is accessible by anyone on the internet. This is the link we will be using for the POST back IP address in our Social Engineering toolkit (SEtoolkit) harvester.</p><br>
+							
+							<h2>Setting up Manisso's fake instagram source code</h2>
+							<p>We just need to download this source code so that we can use it as our site import for our SEtoolkit. Using SEtoolkit Site cloner does a very bad job so it is better to find replicas of the login sites.</p>
+							<span class="image fit"><img src="../images/tutorial1/pic3.JPG" alt="" style="display: block; margin-left: auto; margin-right: auto;"></span>
+							<p>To download this, use <code>git clone</code> to clone the file into your designated directory. The directory where you cloned this site is important for the next steps. Then we are ready to deploy our harvester!</p><br>
+
+							<h2>Deploying Harvester using SEtoolkit</h2>
+							<span class="image fit"><img src="../images/tutorial1/pic4.JPG" alt="" style="display: block; margin-left: auto; margin-right: auto;"></span>
+							<p>Fire up your SEtoolkit and select the following options: <br>
+							<strong>[2]</strong> Website Attack Vectors <br>
+							<strong>[3]</strong> Credential Harverster Attack Method <br>
+							<strong>[3]</strong> Custom Import</p>
+							
+							<p>This will ask you for the POST back IP address which we already have <strong>(the ngrok link).</strong><br>
+							Then paste the directory of the site cloned in the "Path to the website to be cloned" and choose <strong>[2]</strong> to Copy the entire folder. <br>
+							<br> It should look like this:</p>
+							<span class="image fit"><img src="../images/tutorial1/pic5.JPG" alt="" style="display: block; margin-left: auto; margin-right: auto;"></span>
+							
+							<p>After that, just give them the link of the instagram login page so that anyone who visits the site and log in will be redirected to the actual site. This way it wouldnt be too suspicious for the victims. <br>
+							<strong>Use the link:</strong> https://www.instagram.com/accounts/login/</p>
+
+							<span class="image fit"><img src="../images/tutorial1/pic6.JPG" alt="" style="display: block; margin-left: auto; margin-right: auto;"></span>
+							<p>The fake site should look like the image above. Now all you got to do is figure out how to make the link legitimate and how to trick your victims into visiting your link :)</p>
+							<p>To see the credentials harvested, simply go back to your SEtoolkit and it will generate a report for you!</p><br>
+							
+							<h2>Optional: How to use SwetabhOfficial's Instagram hacking tool?</h2>
+							<ol>
+								<li>Download the tool from github: <code>git clone https://github.com/SwetabhOfficial/instagram-hacking-tool</code></li>
+								<li>Go to Directory and give execute permission <code>chmod +x instagram-hacking-tool.sh</code></li>
+								<li>Run the tool using <code>./instagram-hacking-tool.sh</code></li>
+								<li>Choose option <strong>[1]</strong> and insert your attacking machine's IP Address</li>
+							</ol>
+
+							<p>Anyone who visits your IP address will be redirected to the fake website: <strong>Honestly, this site looks way better :)</strong></p>
+							<span class="image fit"><img src="../images/tutorial1/pic7.JPG" alt="" style="display: block; margin-left: auto; margin-right: auto;"></span>
+
+							<p>Happy Hacking!</p>
+
+							<hr>
+
+							<!-- Outro -->
+							<p>Any feedback or constructive criticism is welcomed! You can find me on my twitter <a href="https://twitter.com/moveax_nic"><u>@moveax_nic</u></a>, LinkedIn <a href="https://www.linkedin.com/in/nicoleaponce/"><u>@nicoleaponce</u></a> or my <a href="http://youtube.com/c/chicconumber1"><u>YouTube</u></a> channel!</p>
+
+							<hr>
+
+							<!-- date written & published -->
+							March 12, 2021
+						</div>
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<div class="inner">
+							<section>
+								<h2>Nicole's Blog</h2>
+								Aspiring Network Security Architect
+							</section>
+							<ul class="copyright">
+								<li>&copy; Nicole's Blog. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/util.js"></script>
+			<script src="../assets/js/main.js"></script>
+
+	</body>
+</html>
