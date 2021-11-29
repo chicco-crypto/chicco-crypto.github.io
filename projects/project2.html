@@ -1,0 +1,222 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Configure Site-to-site IPSEC VPN Tunnel in Palo Alto Firewall</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="../index.html" class="logo">
+									<span class="symbol"><img src="../images/face.jpg" alt="" /></span><span class="title">Nicole's Blog</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="../index.html">Home</a></li>
+							<li><a href="../about.html">About Me</a></li>
+							<li><a href="../lectures.html">Lectures</a></li>
+							<li><a href="../projects.html">Projects</a></li>
+							<li><a href="../tutorials.html">Tutorials</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1>Configure Site-to-site IPSEC VPN Tunnel in Palo Alto Firewall</h1>
+							<span class="image main"><img src="../images/project2/img1.jpg" alt="" style="width:100%; margin-left: auto; margin-right: auto;"/></span>
+							
+							<h2>Introduction</h2>
+							<p>The case scenario here is that Canes Pte. Ltd., an investment firm with offices in Singapore and Kuala Lumpur, Malaysia, wants their company’s network setup. The company’s assets are described as follows:</p>
+							<p><ul>
+                                <li>2 Palo Alto Firewalls</li>
+                                <li>1 FTP Server</li>
+                                <li>2 User Laptops</li>
+                                <li>1 Workstation</li>
+                            </ul></p>
+                            <p><strong>The goal:</strong> is to establish an IPsec VPN tunnel between the Singapore and Kuala Lumpur offices to set up a secure LAN-to-LAN connection</p>
+							
+                            <hr> <!--Section break-->
+
+                            <h2>Network Diagram</h2>
+                            <p>In a real-life scenario, the 2 firewalls should be in different networks. For the purposes of this assignment, we simulated the network on a smaller scale, placing both firewalls in the same local area network (192.168.1.0/24) by setting the network adapter for the public-facing interface of both firewalls to bridged mode. 
+                                The resulting network topology is illustrated in the diagram below.</p>
+                            <span style="text-align: center;"><img src="../images/project2/img2.png" alt="" style="display: block; width:100%; margin-left: auto; margin-right: auto;"><figcaption>Figure 1.1: Canes’ Network Diagram (Full)</figcaption></span>
+							
+                            <br><p>Ideally, firewall at Singapore will be referred to as SGFW and the firewall at Kuala Lumpur will be referred to as KLFW for ease of reading. SGFW and KLFW will each have a public IP address assigned by the ISP, and the VPN tunnel between the 2 offices will be established over the Internet. However, in our scaled-down setup, the VPN tunnel will be established between the 2 firewalls as follows.</p>
+							<span style="text-align: center;"><img src="../images/project2/img3.png" alt="" style="display: block; width:100%; margin-left: auto; margin-right: auto;"><figcaption>Figure 1.2: Canes’ Network Diagram (VPN)</figcaption></span>
+                            <br>
+
+							<hr><br> <!--Section break-->
+
+							<h2>Step 1: Create tunnel interfaces</h2>
+							<p>To create a tunnel interface, you need to go to <strong>Network > Interfaces > Tunnel</strong> and select <strong>Add</strong>. We have also ensured that both SGFW and KLFW does not have the same Tunnel Interface name.</p>
+							<p>The tunnel name for SGFW will be <strong>Tunnel.1</strong> and <strong>Tunnel.4</strong> for KLFW as seen from the diagram above.</p>
+
+                            <h3>Creating tunnel interface for KLFW:</h3>
+                            <p><ul>
+                                <li>Tunnel interaface name: Tunnel.4</li>
+                                <li>Virtual Router: default -- <em>The interface needs to be part of a Virtual router</em></li>
+                                <li>Security Zone: VPN -- <em>You will need to create a new security zone for VPN if you haven't already made one.</em></li>
+                            </ul></p>
+                            <p>You can add an IP address for your tunnel interfaces for monitoring if you'd like but for this project we will just focus on setting up the VPN.</p>
+                            <p>The final configuration for the tunnel interface on KLFW should look like this:</p>
+                            <span style="text-align: center;"><img src="../images/project2/img4.png" alt="" style="display: block; width:auto; margin-left: auto; margin-right: auto;"><figcaption></figcaption></span>
+                            <p>If you are curious about the VPN security zone configuration you can see if from here:</p>
+                            <span style="text-align: center;"><img src="../images/project2/img5.png" alt="" style="display: block; width:50%; margin-left: auto; margin-right: auto;"><figcaption></figcaption></span>
+                            <p>Follow the same steps to create the tunnel interface for SGFW</p>
+
+                            <hr><br>
+
+                            <h2>Step 2: Setting up IKE Phase 1</h2>
+                            <p>For IKE Phase-1 negotiation, we configured the IKE Crypto Profile and set up an IKE Phase-1 Gateway. We made sure that the parameters were the same on both SGFW and KLFW, in order for the IKE Phase-1 negotiation process to be successful.</p>
+                            
+                            <h3>Creating IKE Crypto Profile:</h3>
+                            <p>To configure the IKE Crypto Profile, you need to go to <strong>Network > Network Profiles > IKE Crypto</strong> and select <strong>Add.</strong></p>
+                            <span style="text-align: center;"><img src="../images/project2/img7.png" alt="" style="display: block; width:50%; margin-left: auto; margin-right: auto;"><figcaption></figcaption></span><br>
+                            <p>The configuration are as follows, you have to configure the same for the other firewall (but of course you dont have to follow this configuration):</p>
+                            <span style="text-align: center;"><img src="../images/project2/img6.png" alt="" style="display: block; width:50%; margin-left: auto; margin-right: auto;"><figcaption></figcaption></span><br>
+
+                            <h3>Configuring IKE Gateway:</h3>
+							<p>To configure the IKE Gateway, go to <strong>Network > Network Profiles > IKE Gateways</strong> and select <strong>Add > General Tab.</strong></p>
+							<p>I am going to use <strong>Pre-shared key</strong> for authentication and this must be set the same for both firewalls.</p>
+                            <p>Peer IP address type will be set to <strong>IP</strong> and the IP should be the public facing interface of the peer firewall.</p>
+                            
+                            <h3>Creating IKE Gateway in KLFW:</h3>
+                            <span style="text-align: center;"><img src="../images/project2/img8.png" alt="" style="display: block; width:50%; margin-left: auto; margin-right: auto;"><figcaption></figcaption></span><br>
+                            <p>We also need to configure the gateway advance option by going to <strong> IKE Gateways > Advanced Options.</strong></p>
+                            <p><strong>Disable Passive Mode</strong>, if this is enabled, the firewall is not going to initiate any IPSec tunnel negotiation. <br>
+                            <strong>Enable NAT traversal</strong> to prevent intermediary devices from applying NAT to VPN communications if NAT is found to prevent the communications from working. <br>
+                            <strong>Exchange mode</strong> is set to <strong>Auto</strong>. Setting the negotiation requests mode to Agressive will just send everything in one go.<br>
+                            <strong>IKE crypto profile</strong> is the one that I previously created.</p>
+
+                            <p>Same steps should be done to the peer firewall (SGFW).</p>
+                            
+                            <h3>Creating IKE Gateway in SGFW:</h3>
+                            <span style="text-align: center;"><img src="../images/project2/img9.png" alt="" style="display: block; width:50%; margin-left: auto; margin-right: auto;"><figcaption></figcaption></span><br>
+
+                            <h3>How it should look after:</h3>
+                            <span style="text-align: center;"><img src="../images/project2/img10.png" alt="" style="display: block; width:100%; margin-left: auto; margin-right: auto;"><figcaption>Figure: IKE Gateway on KLFW</figcaption></span><br>
+                            <br>
+                            <span style="text-align: center;"><img src="../images/project2/img11.png" alt="" style="display: block; width:100%; margin-left: auto; margin-right: auto;"><figcaption>Figure: IKE Gateway on SGFW</figcaption></span><br>
+
+                            <hr><br>
+
+                            <h2>Step 3: Setting up IKE phase 2</h3>
+                            <p>I need to create an IPSec Crypto profile to specify the protocols and algorithms that would be used for identification, authentication, and encryption in VPN tunnels based on IPSec SA negotiation (IKEv1 Phase-2). Again, you need to make sure that the parameters are the same on both firewalls in order for the IKE Phase-2 negotiation process to be successful.</p>
+
+                            <h3>Create IPSec Crypto Profile:</h3>
+                            <p>To configure the IPSec Crypto Profile, go to <strong>Network > Network Profiles > IPSec Crypto</strong> and select <strong>Add.</strong></p>
+                            <span style="text-align: center;"><img src="../images/project2/img12.png" alt="" style="display: block; width:50%; margin-left: auto; margin-right: auto;"><figcaption>Figure: IPSec Crypto Profile Configuration Details</figcaption></span><br>
+                            <p>The IPSec Cyrpto profile should look like this in both of the firewalls:</p>
+                            <span style="text-align: center;"><img src="../images/project2/img13.png" alt="" style="display: block; width:100%; margin-left: auto; margin-right: auto;"><figcaption>Figure: IPSec Crypto Profile on KLFW and SGFW</figcaption></span><br>
+
+                            <hr><br>
+
+                            <h2>Step 4: Setting up IPSec Tunnel</h2>
+                            <p>We set up an IPSec tunnel using the tunnel interface, IKE Gateway and IPSec Crypto Profile created earlier.
+                            <br>To configure the IPSec tunnel, go to <strong>Network > IPSec Tunnels</strong> and select <strong> Add.</strong></p>
+                            <p>The configuration are as follows:</p>
+                            <span style="text-align: center;"><img src="../images/project2/img14.png" alt="" style="display: block; width:50%; margin-left: auto; margin-right: auto;"><figcaption>Figure: IPSec Tunnel Configuration Details</figcaption></span><br>
+							
+                            <p>The IPSec tunnels should look like this after:</p>
+                            <span style="text-align: center;"><img src="../images/project2/img15.png" alt="" style="display: block; width:100%; margin-left: auto; margin-right: auto;"><figcaption>Figure: IPSec Tunnel in KLFW</figcaption></span><br>
+                            <span style="text-align: center;"><img src="../images/project2/img16.png" alt="" style="display: block; width:100%; margin-left: auto; margin-right: auto;"><figcaption>Figure: IPSec Tunnel in SGFW</figcaption></span><br>
+                            
+                            <p>I did not configure Proxy IDs because both sides of the tunnel were using a PAN-OS Firewall. If either side of the tunnel was a third-party VPN device (i.e. a non PAN-OS FW), then the local proxy IDs must be configured.</p>
+        
+                            <hr><br>
+
+                            <h2>Step 5: Setting up static route for VPN Tunnel</h2>
+                            <p>To redirect traffic to the VPN tunnel, I need to set up a static route on both firewalls. 
+                            <br>To configure the static route, go to <strong>Network > Virtual Routers > Static Routes</strong> and selected <strong>Add.</strong>
+                            </p>
+                            <p>Configuration are as follows:</p>
+                            <span style="text-align: center;"><img src="../images/project2/img17.png" alt="" style="display: block; width:50%; margin-left: auto; margin-right: auto;"><figcaption>Figure: Static Route Configuration Details </figcaption></span><br>
+
+                            <p>The static routes should look like this after:</p>
+                            <span style="text-align: center;"><img src="../images/project2/img18.png" alt="" style="display: block; width:100%; margin-left: auto; margin-right: auto;"><figcaption>Figure:Static Routes on KLFW</figcaption></span><br>
+                            <span style="text-align: center;"><img src="../images/project2/img19.png" alt="" style="display: block; width:100%; margin-left: auto; margin-right: auto;"><figcaption>Figure: Static Routes on SGFW</figcaption></span><br>
+
+                            <hr><br>
+
+                            <h2>Necessary Security Policies</h2>
+                            <p>Since the tunnel interface is in a zone that is different from where traffic will originate or depart, I have to create a security policy to allow traffic to flow from the source zone to the VPN zone containing the tunnel interface.
+                                To define the new security policy, go to <strong>Policies > Security,</strong> select <strong>Add</strong> and configure it according to the tables below.
+                                The following rule was created on KLFW to allow ike negotiation and ipsec/esp packets. 
+                                </p>
+                                <span style="text-align: center;"><img src="../images/project2/img20.png" alt="" style="display: block; width:50%; margin-left: auto; margin-right: auto;"><figcaption>Allow IKE/IPSec Rule Configuration Details on KLFW </figcaption></span><br>
+                                <span style="text-align: center;"><img src="../images/project2/img21.png" alt="" style="display: block; width:50%; margin-left: auto; margin-right: auto;"><figcaption>Allow Outgoing Tunnel Traffic Rule Configuration Details on KLFW </figcaption></span><br>
+                                <span style="text-align: center;"><img src="../images/project2/img22.png" alt="" style="display: block; width:50%; margin-left: auto; margin-right: auto;"><figcaption>Allow Incoming Tunnel Traffic Rule Configuration Details on KLFW </figcaption></span><br>
+
+                            <p>The final configuration for VPN-related security policy rules on KLFW is as follows:</p>
+                            <span style="text-align: center;"><img src="../images/project2/img23.png" alt="" style="display: block; width:100%; margin-left: auto; margin-right: auto;"><figcaption>Figure: VPN-related Security Policy Rules on KLFW </figcaption></span><br>
+                            
+                            <p><strong>It is important that you also create security policy rules to allow ike and ipsec/esp packets and incoming/outgoing traffic through the tunnel on SGFW</strong></p>
+
+                            <hr><br>
+
+                            <h2>Test VPN Connection</h2>
+                            <p>You can find the instructions on how to test the VPN connection here: <a href="https://docs.paloaltonetworks.com/pan-os/8-1/pan-os-admin/vpns/set-up-site-to-site-vpn/test-vpn-connectivity.html">PAN-OS® Administrator’s Guide</a></p>
+
+                            <p>When the VPN tunnel has been set up and configured correctly and successfully the status should turn green like this:</p>
+                            <span style="text-align: center;"><img src="../images/project2/img24.png" alt="" style="display: block; width:100%; margin-left: auto; margin-right: auto;"><figcaption>Figure: Status of IPSec Tunnel and IKE Gateway on SGFW</figcaption></span><br>
+                            <span style="text-align: center;"><img src="../images/project2/img25.png" alt="" style="display: block; width:100%; margin-left: auto; margin-right: auto;"><figcaption>Figure: Status of IPSec Tunnel and IKE Gateway on KLFW </figcaption></span><br>
+
+                            <hr><br>
+                            <!-- Outro -->
+							<p>Any feedback or constructive criticism is welcomed! You can find me on my twitter <a href="https://twitter.com/moveax_nic"><u>@moveax_nic</u></a>, LinkedIn <a href="https://www.linkedin.com/in/nicoleaponce/"><u>@nicoleaponce</u></a> or my <a href="http://youtube.com/c/chicconumber1"><u>YouTube</u></a> channel!</p>
+
+							<hr>
+
+							<!-- date written & published -->
+							Nov 29, 2021
+						</div>
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<div class="inner">
+							<section>
+								<h2>Nicole's Blog</h2>
+								Aspiring Network Security Architect
+							</section>
+							<ul class="copyright">
+								<li>&copy; Nicole's Blog. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/util.js"></script>
+			<script src="../assets/js/main.js"></script>
+
+	</body>
+</html>
